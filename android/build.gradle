@@ -90,6 +90,8 @@ repositories {
 }
 
 def kotlin_version = getExtOrDefault("kotlinVersion")
+def media_version = getExtOrDefault("chimeMediaVersion")
+def sdk_version = getExtOrDefault("chimeSdkVersion")
 
 dependencies {
   // For < 0.71, this will be from the local maven repo
@@ -97,6 +99,8 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+  implementation "software.aws.chimesdk:amazon-chime-sdk-media:$media_version"
+  implementation "software.aws.chimesdk:amazon-chime-sdk:$sdk_version"
 }
 
 if (isNewArchitectureEnabled()) {

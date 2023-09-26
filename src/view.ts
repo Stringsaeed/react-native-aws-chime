@@ -1,3 +1,5 @@
+import type { PropsWithRef } from 'react';
+import type { StyleProp, View } from 'react-native';
 import {
   requireNativeComponent,
   UIManager,
@@ -11,10 +13,10 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-type AwsChimeProps = {
-  color: string;
-  style: ViewStyle;
-};
+type AwsChimeProps = PropsWithRef<{
+  style?: StyleProp<ViewStyle>;
+  ref?: React.Ref<View>;
+}>;
 
 const ComponentName = 'AwsChimeView';
 
