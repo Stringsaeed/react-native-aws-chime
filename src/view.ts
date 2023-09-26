@@ -20,7 +20,7 @@ type AwsChimeProps = PropsWithRef<{
 
 const ComponentName = 'AwsChimeView';
 
-export const AwsChimeView =
+export const AwsChimeNativeView =
   UIManager.getViewManagerConfig(ComponentName) != null
     ? requireNativeComponent<AwsChimeProps>(ComponentName)
     : () => {

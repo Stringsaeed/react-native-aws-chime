@@ -6,7 +6,7 @@ import { AwsChimeView } from 'react-native-aws-chime';
 export default function App() {
   return (
     <View style={styles.container}>
-      <AwsChimeView color="#32a852" style={styles.box} />
+      <AwsChimeView style={styles.box} tileId={1} />
     </View>
   );
 }

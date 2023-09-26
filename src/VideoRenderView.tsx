@@ -1,16 +1,16 @@
 import React from 'react';
 import { findNodeHandle } from 'react-native';
 import { NativeFunction } from './module';
-import { AwsChimeView } from './view';
+import { AwsChimeNativeView } from './view';
 import type { StyleProp } from 'react-native';
 import type { ViewStyle } from 'react-native';
 
 interface Props {
   tileId: number;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
 }
 
-const VideoRenderViewComponent: React.FC<Props> = ({ tileId, ...props }) => {
+const AwsChimeViewComponent: React.FC<Props> = ({ tileId, ...props }) => {
   const viewRef = React.useRef(null);
   const timerId = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -24,7 +24,7 @@ const VideoRenderViewComponent: React.FC<Props> = ({ tileId, ...props }) => {
     };
   }, [tileId]);
 
-  return <AwsChimeView ref={viewRef} {...props} />;
+  return <AwsChimeNativeView ref={viewRef} {...props} />;
 };
 
-export const VideoRenderView = React.memo(VideoRenderViewComponent);
+export const AwsChimeView = React.memo(AwsChimeViewComponent);
