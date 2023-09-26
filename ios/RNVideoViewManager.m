@@ -14,9 +14,9 @@ RCT_EXPORT_MODULE(AwsChimeView);
 
 - (UIView *)view
 {
-  DefaultVideoRenderView *innerView = [[DefaultVideoRenderView alloc] init];
-  innerView.contentMode = UIViewContentModeScaleAspectFit;
-  return innerView;
+    DefaultVideoRenderView *innerView = [[DefaultVideoRenderView alloc] init];
+    innerView.contentMode = UIViewContentModeScaleAspectFit;
+    return innerView;
 }
 
 @end
