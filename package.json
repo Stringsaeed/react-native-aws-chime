@@ -48,7 +48,7 @@
   },
   "homepage": "https://github.com/Stringsaeed/react-native-aws-chime#readme",
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^17.0.2",
