@@ -378,7 +378,7 @@ PODS:
   - React-jsinspector (0.72.5)
   - React-logger (0.72.5):
     - glog
-  - react-native-aws-chime (0.1.0):
+  - react-native-aws-chime (0.2.0):
     - AmazonChimeSDK-Bitcode (= 0.22.7)
     - RCT-Folly (= 2021.07.22.00)
     - React-Core
@@ -701,7 +701,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: ff70a72027dea5cc7d71cfcc6fad7f599f63987a
   React-jsinspector: aef73cbd43b70675f572214d10fa438c89bf11ba
   React-logger: 2e4aee3e11b3ec4fa6cfd8004610bbb3b8d6cca4
-  react-native-aws-chime: 42443243d3bec68d05ca0325cdede856927994aa
+  react-native-aws-chime: b6824ff47576193377763bcec66a0f17a4045ca5
   React-NativeModulesApple: 797bc6078d566eef3fb3f74127e6e1d2e945a15f
   React-perflogger: cd8886513f68e1c135a1e79d20575c6489641597
   React-RCTActionSheet: 726d2615ca62a77ce3e2c13d87f65379cdc73498
