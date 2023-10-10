@@ -4,7 +4,8 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import com.awschime.RNEventEmitter.Companion.RN_EVENT_ERROR
-import com.awschime.RNEventEmitter.Companion.RN_EVENT_MEETING_END
+import com.amazonaws.services.chime.sdk.meetings.device.DeviceChangeObserver
+import com.amazonaws.services.chime.sdk.meetings.device.MediaDevice
 import com.amazonaws.services.chime.sdk.meetings.session.DefaultMeetingSession
 import com.amazonaws.services.chime.sdk.meetings.session.MeetingSession
 import com.amazonaws.services.chime.sdk.meetings.session.MeetingSessionConfiguration
@@ -114,10 +115,12 @@ class NativeMobileSDKBridge(
 
   private fun startAudioVideo() {
     meetingSession?.let {
+      meetingObservers.configureActiveAudioDevice = { configureActiveAudioDevice() }
       it.audioVideo.addRealtimeObserver(meetingObservers)
       it.audioVideo.addVideoTileObserver(meetingObservers)
       it.audioVideo.addAudioVideoObserver(meetingObservers)
       it.audioVideo.addRealtimeDataMessageObserver(TOPIC_CHAT, meetingObservers)
+      it.audioVideo.addDeviceChangeObserver(meetingObservers)
       it.audioVideo.start()
       it.audioVideo.startRemoteVideo()
     }
@@ -249,5 +252,32 @@ class NativeMobileSDKBridge(
   @ReactMethod
   fun removeListeners(count: Int) {
 
+  }
+
+  @ReactMethod
+  fun chooseAudioDevice(deviceId: String) {
+    meetingSession?.let {
+      it.audioVideo.listAudioDevices()
+        .find { device -> device.id == deviceId }
+        ?.let { device ->
+          it.audioVideo.chooseAudioDevice(device)
+        }
+    }
+  }
+
+  @ReactMethod
+  fun switchCamera() {
+    meetingSession?.let {
+      it.audioVideo.switchCamera()
+    }
+  }
+
+  private fun configureActiveAudioDevice() {
+    meetingSession?.let {
+      val devices = it.audioVideo.listAudioDevices().sortedBy { device -> device.order }
+      if (devices.isNotEmpty()) {
+        it.audioVideo.chooseAudioDevice(devices[0])
+      }
+    }
   }
 }

@@ -13,6 +13,8 @@ import com.amazonaws.services.chime.sdk.meetings.audiovideo.VolumeUpdate
 import com.amazonaws.services.chime.sdk.meetings.audiovideo.video.RemoteVideoSource
 import com.amazonaws.services.chime.sdk.meetings.audiovideo.video.VideoTileObserver
 import com.amazonaws.services.chime.sdk.meetings.audiovideo.video.VideoTileState
+import com.amazonaws.services.chime.sdk.meetings.device.DeviceChangeObserver
+import com.amazonaws.services.chime.sdk.meetings.device.MediaDevice
 import com.amazonaws.services.chime.sdk.meetings.realtime.RealtimeObserver
 import com.amazonaws.services.chime.sdk.meetings.realtime.datamessage.DataMessage
 import com.amazonaws.services.chime.sdk.meetings.realtime.datamessage.DataMessageObserver
@@ -21,10 +23,12 @@ import com.amazonaws.services.chime.sdk.meetings.utils.logger.ConsoleLogger
 import com.amazonaws.services.chime.sdk.meetings.utils.logger.LogLevel
 
 class MeetingObservers(private val eventEmitter: RNEventEmitter) : RealtimeObserver,
-  VideoTileObserver, AudioVideoObserver, DataMessageObserver {
+  VideoTileObserver, AudioVideoObserver, DataMessageObserver, DeviceChangeObserver {
   private val logger = ConsoleLogger(LogLevel.DEBUG)
   private var isAudioSessionStopped = true
   private var isVideoSessionStopped = true
+
+  internal var configureActiveAudioDevice: (() -> Unit)? = null
 
   companion object {
     private const val TAG = "MeetingObservers"
@@ -121,6 +125,7 @@ class MeetingObservers(private val eventEmitter: RNEventEmitter) : RealtimeObser
   override fun onAudioSessionStarted(reconnecting: Boolean) {
     logger.info(TAG, "Received event for audio session started. Reconnecting: $reconnecting")
 
+    configureActiveAudioDevice?.invoke()
     if (!reconnecting) {
       isAudioSessionStopped = false
       isVideoSessionStopped = false
@@ -180,5 +185,13 @@ class MeetingObservers(private val eventEmitter: RNEventEmitter) : RealtimeObser
     if (isAudioSessionStopped && isVideoSessionStopped) {
       eventEmitter.sendReactNativeEvent(RNEventEmitter.RN_EVENT_MEETING_END, null)
     }
+  }
+
+  override fun onAudioDeviceChanged(freshAudioDeviceList: List<MediaDevice>) {
+    configureActiveAudioDevice?.invoke()
+    eventEmitter.sendAudioDevicesChangeEvent(
+      RNEventEmitter.RN_EVENT_AUDIO_DEVICE_CHANGE,
+      freshAudioDeviceList
+    )
   }
 }

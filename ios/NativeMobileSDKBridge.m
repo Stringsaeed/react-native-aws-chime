@@ -149,6 +149,31 @@ RCT_EXPORT_METHOD(unbindVideoView:(NSNumber * _Nonnull)tileId)
 }
 
 #pragma mark: Media Related Function
+-(void)configureActiveAudioDevice:(NSArray<MediaDevice *> * _Nonnull)audioDeviceList
+{
+
+  NSArray<AVAudioSessionPortDescription *> *currentOutputs = [[[AVAudioSession sharedInstance] currentRoute] outputs];
+  
+  __block BOOL isHeadsetPluggedIn = false;
+  
+  // Judge useing headohone, if current routes has one or more headphones port.
+   [currentOutputs enumerateObjectsUsingBlock:^(AVAudioSessionPortDescription *output, NSUInteger idx, BOOL *stop) {
+     if([output.portType isEqual:AVAudioSessionPortHeadphones]){
+       isHeadsetPluggedIn = true;
+     }
+   }];
+  
+  // If wiredHeadset connected, use Build-in receiver
+  if(isHeadsetPluggedIn)
+  {
+    // use Build-in receiver
+    [meetingSession.audioVideo chooseAudioDeviceWithMediaDevice:[audioDeviceList firstObject]];
+  } else {
+    // use loud speaker (or other device)
+    [meetingSession.audioVideo chooseAudioDeviceWithMediaDevice:[audioDeviceList lastObject]];
+  }
+}
+
 -(void)startVideo
 {
     AVAuthorizationStatus status = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
@@ -199,7 +224,9 @@ RCT_EXPORT_METHOD(unbindVideoView:(NSNumber * _Nonnull)tileId)
     [meetingSession.audioVideo addVideoTileObserverWithObserver:observer];
     [meetingSession.audioVideo addAudioVideoObserverWithObserver:observer];
     [meetingSession.audioVideo addRealtimeDataMessageObserverWithTopic:@"chat" observer:observer];
+    [meetingSession.audioVideo addDeviceChangeObserverWithObserver:observer];
     [self startAudioVideo];
+    [self configureActiveAudioDevice:[meetingSession.audioVideo listAudioDevices]];
 }
 
 -(void)startAudioVideo
@@ -260,6 +287,30 @@ RCT_EXPORT_METHOD(sendDataMessage:(NSString* _Nonnull)topic data:(NSString* _Non
     }
     
     [meetingSession.audioVideo realtimeSendDataMessageWithTopic:topic data:data lifetimeMs:lifetimeMs error:nil];
+}
+
+RCT_EXPORT_METHOD(chooseAudioDevice:(NSString* _Nonnull)port)
+{
+    if(meetingSession == nil) {
+        return;
+    }
+    NSArray *audioDevices = [meetingSession.audioVideo listAudioDevices];
+    for (MediaDevice *device in audioDevices) {
+        if ([device.port isEqual:port]) {
+            [meetingSession.audioVideo chooseAudioDeviceWithMediaDevice:device];
+            break;
+        }
+    }
+}
+
+
+RCT_EXPORT_METHOD(switchCamera)
+{
+    if(meetingSession == nil) {
+        return;
+    }
+    
+    [meetingSession.audioVideo switchCamera];
 }
 
 @end

@@ -188,5 +188,20 @@
     }];
 }
 
+- (void)audioDeviceDidChangeWithFreshAudioDeviceList:(NSArray<MediaDevice *> *)freshAudioDeviceList {
+    NSMutableArray *devices = [NSMutableArray array];
+    
+    if (freshAudioDeviceList != nil) {
+        for (MediaDevice *device in freshAudioDeviceList) {
+            NSMutableDictionary *map = [NSMutableDictionary dictionary];
+            [map setObject:device.label forKey:@"audioDeviceLabel"];
+            [map setObject:device.port forKey:@"audioDeviceId"];
+            [devices addObject:map];
+        }
+    }
+    
+    [_bridge sendEventWithName:kEventOnAudioDeviceChanged body:devices];
+}
+
 
 @end

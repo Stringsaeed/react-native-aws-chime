@@ -2,10 +2,12 @@ package com.awschime
 
 import com.amazonaws.services.chime.sdk.meetings.audiovideo.AttendeeInfo
 import com.amazonaws.services.chime.sdk.meetings.audiovideo.video.VideoTileState
+import com.amazonaws.services.chime.sdk.meetings.device.MediaDevice
 import com.amazonaws.services.chime.sdk.meetings.realtime.datamessage.DataMessage
-import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
+import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 
@@ -22,6 +24,7 @@ class RNEventEmitter(private val reactContext: ReactApplicationContext) {
     const val RN_EVENT_ATTENDEES_MUTE = "OnAttendeesMute"
     const val RN_EVENT_ATTENDEES_UNMUTE = "OnAttendeesUnmute"
     const val RN_EVENT_DATA_MESSAGE_RECEIVE = "OnDataMessageReceive"
+    const val RN_EVENT_AUDIO_DEVICE_CHANGE = "OnAudioDeviceChanged"
 
     // Additional data for attendee events
     private const val RN_EVENT_KEY_ATTENDEE_ID = "attendeeId"
@@ -43,6 +46,12 @@ class RNEventEmitter(private val reactContext: ReactApplicationContext) {
     private const val RN_EVENT_KEY_DATA_MESSAGE_THROTTLED = "throttled"
     private const val RN_EVENT_KEY_DATA_MESSAGE_TIMESTAMP_MS = "timestampMs"
     private const val RN_EVENT_KEY_DATA_MESSAGE_TOPIC = "topic"
+
+    // Additional data for audio devices change event
+    private const val RN_EVENT_KEY_AUDIO_DEVICE_ID = "audioDeviceId"
+    private const val RN_EVENT_KEY_AUDIO_DEVICE_TYPE = "audioDeviceType"
+    private const val RN_EVENT_KEY_AUDIO_DEVICE_ORDER = "audioDeviceOrder"
+    private const val RN_EVENT_KEY_AUDIO_DEVICE_LABEL = "audioDeviceLabel"
   }
 
   // Used for events such as attendee join and attendee leave
@@ -82,8 +91,28 @@ class RNEventEmitter(private val reactContext: ReactApplicationContext) {
     sendReactNativeEvent(eventName, map)
   }
 
+  fun sendAudioDevicesChangeEvent(eventName: String, mediaDevices: List<MediaDevice>?) {
+    val devices: WritableArray = WritableNativeArray()
+    if (mediaDevices != null) {
+      for (device in mediaDevices) {
+        val map: WritableMap = WritableNativeMap()
+        map.putString(RN_EVENT_KEY_AUDIO_DEVICE_LABEL, device.label)
+        map.putString(RN_EVENT_KEY_AUDIO_DEVICE_ID, device.id)
+        map.putInt(RN_EVENT_KEY_AUDIO_DEVICE_ORDER, device.order)
+        map.putString(RN_EVENT_KEY_AUDIO_DEVICE_TYPE, device.type.toString())
+        devices.pushMap(map)
+      }
+    }
+    sendReactNativeEvent(eventName, devices)
+  }
+
   // Used for sending events with non String data (Attendee info, video tile state)
   private fun sendReactNativeEvent(eventName: String, data: WritableMap) {
+    reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+      .emit(eventName, data)
+  }
+
+  private fun sendReactNativeEvent(eventName: String, data: WritableArray) {
     reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
       .emit(eventName, data)
   }
