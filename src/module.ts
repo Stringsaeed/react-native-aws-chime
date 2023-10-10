@@ -56,4 +56,6 @@ export const NativeFunction = {
   bindVideoView: NativeModules.NativeMobileSDKBridge.bindVideoView,
   unbindVideoView: NativeModules.NativeMobileSDKBridge.unbindVideoView,
   sendDataMessage: NativeModules.NativeMobileSDKBridge.sendDataMessage,
+  switchCamera: NativeModules.NativeMobileSDKBridge.switchCamera,
+  chooseAudioDevice: NativeModules.NativeMobileSDKBridge.chooseAudioDevice,
 };

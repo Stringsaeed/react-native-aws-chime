@@ -23,4 +23,10 @@ export const AwsChime = {
   sendDataMessage: (topic: string, data: string, lifeTimeMs: number) => {
     NativeFunction.sendDataMessage(topic, data, lifeTimeMs);
   },
+  switchCamera: () => {
+    NativeFunction.switchCamera();
+  },
+  chooseAudioDevice: (deviceId: string) => {
+    NativeFunction.chooseAudioDevice(deviceId);
+  },
 };
